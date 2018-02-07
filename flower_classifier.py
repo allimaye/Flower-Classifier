@@ -20,7 +20,19 @@ class KNNClassifer():
         return prediction
 
     def closest(self, row, k):
-        pass
+        # Use a max heap to store k closest points.
+        max_heap = []
+        for i in xrange(len(self.x_train)):
+            dist = distance.euclidean(row, x_train[i])
+            if (len(max_heap) < k):
+                heapq.heappush(max_heap, (x_train[i], dist * -1, i))
+                continue
+            cmp_dist = max_heap[0][1] * -1
+            if (dist < cmp_dist):
+                heapq.heappop(max_heap)
+                heapq.heappush(max_heap, (x_train[i], dist * -1, i))
+
+        return 0
 
 
 
