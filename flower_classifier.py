@@ -1,5 +1,6 @@
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import KFold
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score
 from scipy.spatial import distance
@@ -47,8 +48,6 @@ class KNNClassifier():
 
         return most_popular
 
-
-
 iris = datasets.load_iris()
 
 features = iris.data
@@ -57,10 +56,12 @@ labels = iris.target
 KNN_classifier = KNNClassifier()
 
 k_accuracy = []
-for k in xrange(1, 26):
+for k in xrange(2, 26):
     accuracy_scores = []
-    for i in xrange(5):
-        x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.3)
+    kf = KFold(n_splits=k)
+    for train_indices, test_indices in kf.split(features):
+        x_train, x_test = features[train_indices[0]:train_indices[-1] + 1], features[test_indices[0]:test_indices[-1] + 1]
+        y_train, y_test = labels[train_indices[0]:train_indices[-1] + 1], labels[test_indices[0]:test_indices[-1] + 1]
         KNN_classifier.fit(x_train, y_train)
         predictions = KNN_classifier.predict(x_test, k)
         score = accuracy_score(y_test, predictions)
@@ -75,7 +76,6 @@ for index, acc in enumerate(k_accuracy):
     if(acc > best_accuracy):
         best_index, best_accuracy = index, acc
 
-
-print "Optimal K: %s, Accuracy: %s" % (best_index + 1, best_accuracy)
+print "Optimal K: %s, Accuracy: %s" % (best_index + 2, best_accuracy)
 
 
