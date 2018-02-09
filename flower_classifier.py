@@ -54,12 +54,28 @@ iris = datasets.load_iris()
 features = iris.data
 labels = iris.target
 
-x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size= 0.3)
-
 KNN_classifier = KNNClassifier()
 
-KNN_classifier.fit(x_train, y_train)
-predictions = KNN_classifier.predict(x_test, 2)
+k_accuracy = []
+for k in xrange(1, 26):
+    accuracy_scores = []
+    for i in xrange(5):
+        x_train, x_test, y_train, y_test = train_test_split(features, labels, test_size=0.3)
+        KNN_classifier.fit(x_train, y_train)
+        predictions = KNN_classifier.predict(x_test, k)
+        score = accuracy_score(y_test, predictions)
+        accuracy_scores.append(score)
 
-print accuracy_score(y_test, predictions)
+    avg_accuracy = sum(accuracy_scores)/float(len(accuracy_scores))
+    k_accuracy.append(avg_accuracy)
+
+best_accuracy, best_index = 0, 0
+
+for index, acc in enumerate(k_accuracy):
+    if(acc > best_accuracy):
+        best_index, best_accuracy = index, acc
+
+
+print "Optimal K: %s, Accuracy: %s" % (best_index + 1, best_accuracy)
+
 
